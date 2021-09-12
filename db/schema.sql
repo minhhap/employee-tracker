@@ -21,4 +21,3 @@ CREATE TABLE employees (
   role_id INTEGER NOT NULL,
   manager_id INTEGER
 );
-
