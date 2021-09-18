@@ -6,7 +6,7 @@ Javascript
 Node
 MySQL2
 
-## Deployed link
+## Demo link
 https://youtu.be/Ji_n6nrZFo4
 
 ## GitHub repo
