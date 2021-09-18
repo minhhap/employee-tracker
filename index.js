@@ -88,7 +88,8 @@ function viewEmployees() {
         employees.first_name, 
         employees.last_name, 
         roles.title, 
-        roles.salary
+        roles.salary,
+        employees.manager_id
         FROM employees 
         LEFT JOIN roles ON employees.role_id = roles.id`;
 
