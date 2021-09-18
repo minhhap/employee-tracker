@@ -14,9 +14,9 @@ const promptUser = () => {
                 "View all departments",
                 "View all roles",
                 "View all employees",
+                "Add a department",
                 "Add a role",
                 "Add an employee",
-                "Add a department",
                 "Update an employee role",
                 "Quit"
             ]
@@ -37,14 +37,25 @@ const promptUser = () => {
                 case "View all employees":
                     viewEmployees();
                     break;
+                case "Add a department":
+                    addDepartment();
+                    break;
                 case "Add a role":
                     addRole();
                     break;
-                default: return
+                case "Add an employee":
+                    addEmployee();
+                    break;
+                case "Update an employee role":
+                    updateEmployee();
+                    break;
+                default: console.log ('Exit')
+                    break;
             }
         })
 };
 
+// View departments
 function viewDepartments() {
     const sql = `SELECT * FROM departments`;
     console.log(sql);
@@ -52,11 +63,12 @@ function viewDepartments() {
         if (err) {
             console.log("Error")
         }
-        console.table (
-            rows)
+        console.table (rows);
+        promptUser()
     });
 };
 
+// View roles
 function viewRoles() {
     const sql = `SELECT * FROM roles`;
     console.log(sql);
@@ -64,11 +76,12 @@ function viewRoles() {
         if (err) {
             console.log("Error")
         }
-        console.table (
-            rows)
+        console.table (rows);
+        promptUser()
     });
 };
 
+// View employees
 function viewEmployees() {
     const sql = `SELECT 
         employees.first_name, 
@@ -83,11 +96,37 @@ function viewEmployees() {
         if (err) {
             console.log("Error")
         }
-        console.table (
-            rows)
+        console.table (rows);
+        promptUser()
     });
 };
 
+// Add department
+function addDepartment() {
+    inquirer
+        .prompt([
+            {
+                message: 'What is the name of the department you want to add?',
+                type: 'input',
+                name: "department_name"
+            }
+        ])
+    .then(function(res) {
+        const department_name = res.department_name;
+        console.log(res);
+        const sql = `INSERT INTO departments SET ?` // HELP
+        db.query(sql, {department_name:res.department_name}, function (err, res) {
+            if (err) {
+                console.log("Error")
+            } else {
+                console.log(`The department was added`);
+                promptUser()
+            }
+        }); 
+    })
+};
+
+// Add role
 function addRole() {
     inquirer
         .prompt([
@@ -109,22 +148,58 @@ function addRole() {
         ])
     .then(function(res) {
         const title = res.title;
+        console.log(res);
         const salary = res.salary;
         const department_id = res.department_id;
-        const sql = 'INSERT INTO roles (title, salary, department_id) VALUE("${title}", "${salary}", "${department_id}")';
-    
-        db.query(sql, function (err, res) {
+        const sql = `INSERT INTO roles SET ?` // HELP
+        console.log(salary);
+        db.query(sql, {title:res.title, salary:res.salary, department_id:res.department_id}, function (err, res) {
             if (err) {
                 console.log("Error")
             } else {
-                res({
-                    changes: result.affectedRows
-                })
+                console.log(`The role was added`);
+                promptUser()
             }
         }); 
     })
 };
 
+// Add an employee
+function addEmployee() {
+    inquirer
+        .prompt([
+            {
+                message: 'What is the employees first name?',
+                type: 'input',
+                name: "first_name"
+            },
+            {
+                message: 'What is the employee last name?',
+                type: 'input',
+                name: "last_name"
+            },
+            {
+                message: 'What is the employees role ID?',
+                type: 'input',
+                name: "role_id"
+            }
+        ])
+    .then(function(res) {
+        const first_name = res.first_name;
+        console.log(res);
+        const last_name = res.last_name;
+        const role_id = res.role_id;
+        const sql = `INSERT INTO roles SET ?` // HELP
+        db.query(sql, {first_name:res.first_name, last_name:res.last_name, role_id:res.role_id}, function (err, res) {
+            if (err) {
+                console.log("Error")
+            } else {
+                console.log(`The employee was added`);
+                promptUser()
+            }
+        }); 
+    })
+};
 
 // Create a function to initialize app
 function init() {
@@ -132,6 +207,5 @@ function init() {
     // .then(data => writeToFile(generateMarkdown(data)));
 };
   
-
 // Function call to initialize app
 init();
