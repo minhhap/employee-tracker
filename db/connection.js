@@ -10,7 +10,7 @@ const db = mysql.createConnection(
       password: 'Bootcamp123',
       database: 'CMS'
     },
-    console.log('Connected to the election database.')
+    console.log('Connected to the CMS database.')
   );  
 
   module.exports = db;  
