@@ -18,7 +18,7 @@ const promptUser = () => {
                 "Add a role",
                 "Add an employee",
                 "Update an employee role",
-                "Quit"
+                "Exit"
             ]
         }
     ];
@@ -50,6 +50,7 @@ const promptUser = () => {
                     updateEmployee();
                     break;
                 default: console.log ('Exit')
+                    exit();
                     break;
             }
         })
@@ -61,7 +62,7 @@ function viewDepartments() {
     console.log(sql);
     db.query(sql, (err, rows) => {
         if (err) {
-            console.log("Error")
+            console.log(err)
         }
         console.table (rows);
         promptUser()
@@ -74,7 +75,7 @@ function viewRoles() {
     console.log(sql);
     db.query(sql, (err, rows) => {
         if (err) {
-            console.log("Error")
+            console.log(err)
         }
         console.table (rows);
         promptUser()
@@ -94,7 +95,7 @@ function viewEmployees() {
     console.log(sql);
     db.query(sql, (err, rows) => {
         if (err) {
-            console.log("Error")
+            console.log(err)
         }
         console.table (rows);
         promptUser()
@@ -117,7 +118,7 @@ function addDepartment() {
         const sql = `INSERT INTO departments SET ?` // HELP
         db.query(sql, {department_name:res.department_name}, function (err, res) {
             if (err) {
-                console.log("Error")
+                console.log(err)
             } else {
                 console.log(`The department was added`);
                 promptUser()
@@ -151,11 +152,11 @@ function addRole() {
         console.log(res);
         const salary = res.salary;
         const department_id = res.department_id;
-        const sql = `INSERT INTO roles SET ?` // HELP
+        const sql = `INSERT INTO roles SET ?`
         console.log(salary);
         db.query(sql, {title:res.title, salary:res.salary, department_id:res.department_id}, function (err, res) {
             if (err) {
-                console.log("Error")
+                console.log(err)
             } else {
                 console.log(`The role was added`);
                 promptUser()
@@ -182,6 +183,12 @@ function addEmployee() {
                 message: 'What is the employees role ID?',
                 type: 'input',
                 name: "role_id"
+            },
+            {
+                message: 'What is the employees manager ID?',
+                type: 'input',
+                name: "manager_id"
+                //validation to default to null
             }
         ])
     .then(function(res) {
@@ -189,10 +196,10 @@ function addEmployee() {
         console.log(res);
         const last_name = res.last_name;
         const role_id = res.role_id;
-        const sql = `INSERT INTO roles SET ?` // HELP
-        db.query(sql, {first_name:res.first_name, last_name:res.last_name, role_id:res.role_id}, function (err, res) {
+        const sql = `INSERT INTO employees SET ?`
+        db.query(sql, {first_name:res.first_name, last_name:res.last_name, role_id:res.role_id, manager_id:res.manager_id}, function (err, res) {
             if (err) {
-                console.log("Error")
+                console.log(err)
             } else {
                 console.log(`The employee was added`);
                 promptUser()
@@ -200,6 +207,42 @@ function addEmployee() {
         }); 
     })
 };
+
+// Update an employee's role
+function updateEmployee() {
+    inquirer
+        .prompt([
+            {
+                message: 'What is the employee ID you want to update?',
+                type: 'number',
+                name: "employee_id"
+            },
+            {
+                message: 'What is the new role ID of this employee?',
+                type: 'number',
+                name: "role_id"
+            }
+        ])
+    .then(function(res) {
+        const employee_id = res.employee_id;
+        console.log(res);
+        const role_id = res.role_id;
+        const sql = `UPDATE employees SET ? WHERE id = ${employee_id}`
+        db.query(sql, {role_id:res.role_id}, function (err, res) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log(`The employee was edited`);
+                promptUser()
+            }
+        }); 
+    })
+};
+
+// Exit function
+function exit() {
+    process.exit()
+}
 
 // Create a function to initialize app
 function init() {
